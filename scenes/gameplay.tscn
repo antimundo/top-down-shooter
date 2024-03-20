@@ -1,0 +1,148 @@
+[gd_scene load_steps=14 format=3 uid="uid://d4e8eh5tqn6ds"]
+
+[ext_resource type="Script" path="res://scenes/player.gd" id="1_5rlah"]
+[ext_resource type="Script" path="res://scenes/camera.gd" id="1_18awx"]
+[ext_resource type="PackedScene" uid="uid://dm7p5nfgu6sqi" path="res://meshes/vehicles/tractor.glb" id="1_payqe"]
+[ext_resource type="PackedScene" uid="uid://b2uglfheplbh5" path="res://meshes/blasters/blasterQ.glb" id="2_j8aql"]
+[ext_resource type="PackedScene" uid="uid://dk7x8hjx8eo8f" path="res://meshes/mini-arena/tree.glb" id="3_7nmxq"]
+[ext_resource type="Script" path="res://scenes/blaster.gd" id="4_yv1sy"]
+
+[sub_resource type="Environment" id="Environment_11i6t"]
+background_mode = 1
+background_color = Color(0.752941, 0.776471, 0.827451, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.803922, 0.815686, 0.866667, 1)
+ambient_light_energy = 1.15
+tonemap_mode = 2
+ssao_enabled = true
+ssao_radius = 0.5
+ssao_power = 3.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_r15xm"]
+albedo_color = Color(0.309804, 0.662745, 0.368627, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_uls8a"]
+albedo_color = Color(0.815686, 0.462745, 0.290196, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_qvkp1"]
+size = Vector3(1, 1, 1.6)
+
+[sub_resource type="Animation" id="Animation_t618t"]
+resource_name = "shoot"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1),
+"transitions": PackedFloat32Array(-2, -2),
+"update": 0,
+"values": [Vector3(0, 0.084, -0.4), Vector3(0, 0.08442, -0.5)]
+}
+
+[sub_resource type="Animation" id="Animation_mq1jd"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0.08442, -0.5)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_7sbmi"]
+_data = {
+"RESET": SubResource("Animation_mq1jd"),
+"shoot": SubResource("Animation_t618t")
+}
+
+[node name="Node3D" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_11i6t")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+use_collision = true
+size = Vector3(100, 1, 100)
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="CSGBox3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24.6023, 2.27024, 3.5)
+use_collision = true
+size = Vector3(10, 4, 17)
+material = SubResource("StandardMaterial3D_r15xm")
+
+[node name="CSGCylinder3D" type="CSGCylinder3D" parent="CSGBox3D/CSGBox3D2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.01073, 0, 0)
+operation = 2
+radius = 7.0
+height = 10.0
+sides = 16
+material = SubResource("StandardMaterial3D_uls8a")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.573576, 0.819152, 0, -0.819152, 0.573576, 0, 26, 18)
+current = true
+fov = 40.0
+script = ExtResource("1_18awx")
+
+[node name="Player" type="CharacterBody3D" parent="."]
+script = ExtResource("1_5rlah")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -0.1)
+shape = SubResource("BoxShape3D_qvkp1")
+
+[node name="BlasterPivot" type="Node3D" parent="Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0.344512)
+script = ExtResource("4_yv1sy")
+
+[node name="Blaster" parent="Player/BlasterPivot" instance=ExtResource("2_j8aql")]
+transform = Transform3D(-2, 0, -2.98023e-07, 0, 2, 0, 2.98023e-07, 0, -2, 0, 0.08442, -0.5)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Player/BlasterPivot/Blaster"]
+libraries = {
+"": SubResource("AnimationLibrary_7sbmi")
+}
+
+[node name="ShootPoint" type="Node3D" parent="Player/BlasterPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, -1.1)
+
+[node name="tractor2" parent="Player" instance=ExtResource("1_payqe")]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.642788, -0.586824, 0.492404, 0, 0.642788, 0.766044, -0.766044, 0.492404, -0.413176, 0, 10, 0)
+shadow_enabled = true
+
+[node name="DirectionalLight3D2" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.696883, 0.675633, -0.240571, -0.620885, -0.400462, 0.673893, 0.358964, 0.618992, 0.698566, 0, 10, 0)
+light_color = Color(0.760784, 0.741176, 0.811765, 1)
+light_energy = 0.2
+
+[node name="World" type="Node3D" parent="."]
+
+[node name="tree2" parent="World" instance=ExtResource("3_7nmxq")]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, -2.71987, 0, -3.86387)
+
+[node name="tree3" parent="World" instance=ExtResource("3_7nmxq")]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, -3.30566, 0, -5.56692)
+
+[node name="tree4" parent="World" instance=ExtResource("3_7nmxq")]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, -4.61837, 0, -4.35961)
+
+[node name="tree5" parent="World" instance=ExtResource("3_7nmxq")]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 6.80246, 0, -8.24844)
+
+[node name="tree6" parent="World" instance=ExtResource("3_7nmxq")]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 8.31159, 0, -7.22495)
+
+[node name="tree7" parent="World" instance=ExtResource("3_7nmxq")]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 8.59763, 0, -9.25202)
