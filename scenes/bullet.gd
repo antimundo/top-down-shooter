@@ -10,3 +10,13 @@ func _physics_process(delta):
 	if transform.origin.is_equal_approx(transform.origin + velocity.normalized()):
 		look_at(transform.origin + velocity.normalized(), Vector3.UP)
 	transform.origin += velocity * delta
+
+
+func _on_body_entered(body):
+	queue_free()
+	if body is Enemy:
+		body.kill()
+		queue_free()
+
+func _on_timer_timeout():
+	queue_free()

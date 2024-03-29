@@ -1,0 +1,26 @@
+[gd_scene load_steps=5 format=3 uid="uid://beub68u33s8mq"]
+
+[ext_resource type="Script" path="res://scenes/enemy.gd" id="1_8yo88"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_c1bja"]
+size = Vector3(2, 2, 2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ctsmn"]
+albedo_color = Color(0.905882, 0, 0.172549, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_qhtru"]
+material = SubResource("StandardMaterial3D_ctsmn")
+size = Vector3(2, 2, 2)
+
+[node name="Enemy" type="RigidBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -5.1)
+script = ExtResource("1_8yo88")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_c1bja")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_qhtru")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="body_shape_entered" from="." to="." method="_on_body_shape_entered"]
